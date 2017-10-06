@@ -403,6 +403,8 @@ NSString const *CALLBACK_ASSOCIATED_ID = @"RCCNavigationController.CALLBACK_ASSO
     if (testID)
     {
       barButtonItem.accessibilityIdentifier = testID;
+      // Hack for using accessibility label's as appium test ID's
+      barButtonItem.accessibilityLabel = testID;
     }
   }
   
