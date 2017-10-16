@@ -175,7 +175,9 @@
     viewController.tabBarItem.selectedImage = iconImageSelected;
 
     // Hack for using accessibility label's as appium test ID's
-    viewController.tabBarItem.accessibilityLabel = tabItemLayout[@"props"][@"testID"];
+    if (tabItemLayout[@"props"][@"testID"]) {
+        viewController.tabBarItem.accessibilityLabel = tabItemLayout[@"props"][@"testID"];
+    }
     
     id imageInsets = tabItemLayout[@"props"][@"iconInsets"];
     if (imageInsets && imageInsets != (id)[NSNull null])
