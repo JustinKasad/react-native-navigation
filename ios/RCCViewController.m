@@ -429,7 +429,20 @@ const NSInteger TRANSPARENT_NAVBAR_TAG = 78264803;
   {
     viewController.navigationController.navigationBar.tintColor = nil;
   }
-  
+ 
+  BOOL topBarElevationShadowEnabled = self.navigatorStyle[@"topBarElevationShadowEnabled"];
+  if (topBarElevationShadowEnabled) {
+
+      CGFloat shadowOpacity = self.navigatorStyle[@"topBarShadowOpacity"] != (id)[NSNull null] ? [RCTConvert CGFloat:self.navigatorStyle[@"topBarShadowOpacity"]] : .3;
+      CGFloat shadowOffset = self.navigatorStyle[@"topBarShadowOffset"] != (id)[NSNull null] ? [RCTConvert CGFloat:self.navigatorStyle[@"topBarShadowOffset"]] : 3;
+      CGFloat shadowRadius = self.navigatorStyle[@"topBarShadowRadius"] != (id)[NSNull null] ? [RCTConvert CGFloat:self.navigatorStyle[@"topBarShadowRadius"]] : 2;
+
+      viewController.navigationController.navigationBar.layer.shadowOpacity = shadowOpacity;
+      viewController.navigationController.navigationBar.layer.shadowColor = UIColor.blackColor.CGColor;
+      viewController.navigationController.navigationBar.layer.shadowOffset = CGSizeMake(0, shadowOffset);
+      viewController.navigationController.navigationBar.layer.shadowRadius = shadowRadius;
+  }
+ 
   BOOL viewControllerBasedStatusBar = false;
   
   NSObject *viewControllerBasedStatusBarAppearance = [[NSBundle mainBundle] infoDictionary][@"UIViewControllerBasedStatusBarAppearance"];
