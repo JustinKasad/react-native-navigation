@@ -11,9 +11,13 @@ public class ViewVisibilityChecker {
         if (view == null) {
             return false;
         }
-        final int top = getTopRelativeToContentView(view);
-        final int scrollYInScreen = getScrollYInScreen(view);
-        return top + view.getHeight() > scrollYInScreen;
+        try {
+            final int top = getTopRelativeToContentView(view);
+            final int scrollYInScreen = getScrollYInScreen(view);
+            return top + view.getHeight() > scrollYInScreen;
+        } catch (Exception e){
+            return false;
+        }
     }
 
     private static int getTopRelativeToContentView(View view) {
