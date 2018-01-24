@@ -23,16 +23,6 @@ public class SlidingOverlaysQueue implements SlidingOverlay.SlidingListener{
                 if (queue.size() == 1) {
                     dispatchNextSlidingOverlay();
                 }
-                else {
-                    SlidingOverlay currentOverlay = queue.peek();
-                    if (currentOverlay != null && currentOverlay.isVisible()) {
-                        if (autoDismissTimer != null) {
-                            autoDismissTimer.cancel();
-                            autoDismissTimer = null;
-                        }
-                        currentOverlay.hide();
-                    }
-                }
             }
         });
     }
