@@ -400,21 +400,14 @@ static NSMutableArray *gShownNotificationViews = nil;
     
     if ([gShownNotificationViews count] > 0)
     {
-        for (NotificationView *notificationView in gShownNotificationViews)
-        {
-            [notificationView killAutoDismissTimer];
-        }
+        //Queue pending notifications if more than 1 is received.
+        PendingNotification *pendingNotification = [PendingNotification new];
+        pendingNotification.params = params;
+        pendingNotification.resolve = resolve;
+        pendingNotification.reject = reject;
+        [gPendingNotifications insertObject:pendingNotification atIndex:0];
         
-        //limit the amount of consecutive notifications per second. If they arrive too fast, the last one will be remembered as pending
-        if(CFAbsoluteTimeGetCurrent() - gLastShownTime < 1)
-        {
-            PendingNotification *pendingNotification = [PendingNotification new];
-            pendingNotification.params = params;
-            pendingNotification.resolve = resolve;
-            pendingNotification.reject = reject;
-            [gPendingNotifications addObject:pendingNotification];
-            return;
-        }
+        return;
     }
     
     gLastShownTime = CFAbsoluteTimeGetCurrent();
