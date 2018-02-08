@@ -1,23 +1,7 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, Text, Button, Alert} from 'react-native';
+import {StyleSheet, View, Text, Button} from 'react-native';
 
 class Push extends Component {
-
-  constructor(props) {
-    super(props);
-    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
-  }
-
-  onNavigatorEvent(event) {
-    if (event.type === 'PreviewActionPress') {
-      if (event.id === 'action-cancel') {
-        Alert.alert('Cancelled');
-      }
-      if (event.id === 'action-delete-sure') {
-        Alert.alert('Deleted');
-      }
-    }
-  }
 
   onPushAnother = () => {
     this.props.navigator.push({

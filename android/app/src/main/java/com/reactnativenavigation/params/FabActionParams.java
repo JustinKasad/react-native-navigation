@@ -7,5 +7,4 @@ public class FabActionParams {
     public String navigatorEventId;
     public Drawable icon;
     public StyleParams.Color backgroundColor;
-    public StyleParams.Color iconColor;
 }

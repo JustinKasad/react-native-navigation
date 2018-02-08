@@ -2,11 +2,7 @@ package com.reactnativenavigation.views;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Typeface;
 import android.support.design.widget.TabLayout;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.reactnativenavigation.params.StyleParams;
 import com.reactnativenavigation.views.utils.TopTabsIconColorHelper;
@@ -41,24 +37,6 @@ public class TopTabs extends TabLayout {
         }
 
         setTabTextColors(tabTextColor, selectedTabColor);
-    }
-
-    void setTopTabsTextFontFamily(StyleParams style) {
-        if (style.topTabTextFontFamily.hasFont()) {
-            ViewGroup viewGroup = (ViewGroup) this.getChildAt(0);
-
-            for (int tab = 0; tab < viewGroup.getChildCount(); tab++) {
-                ViewGroup tabViewGroup = (ViewGroup) viewGroup.getChildAt(tab);
-
-                for (int i = 0; i < tabViewGroup.getChildCount(); i++) {
-                    View tabViewChild = tabViewGroup.getChildAt(i);
-                    if (tabViewChild instanceof TextView) {
-                        ((TextView) tabViewChild).setTypeface(
-                                style.topTabTextFontFamily.get(), Typeface.NORMAL);
-                    }
-                }
-            }
-        }
     }
 
     void setScrollable(StyleParams style) {

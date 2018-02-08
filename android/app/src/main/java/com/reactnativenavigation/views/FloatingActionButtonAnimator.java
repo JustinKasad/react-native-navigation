@@ -4,36 +4,43 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 
 import java.util.List;
 
 public class FloatingActionButtonAnimator {
-    private static final int SHOW_DURATION = 120;
-    private static final int HIDE_DURATION = 120;
-    private static final float SCALE = 0.6f;
-    private static final int ANGLE = 90;
-    private static final DecelerateInterpolator DECELERATE_INTERPOLATOR = new DecelerateInterpolator(1.5f);
 
     private final FloatingActionButton collapsedFab;
     private final FloatingActionButton expendedFab;
+    private int crossFadeAnimationDuration;
 
-    FloatingActionButtonAnimator(FloatingActionButton collapsedFab, FloatingActionButton expendedFab) {
+    private enum State{Showing, Idle, Removing}
+    private State state = State.Idle;
+
+    public FloatingActionButtonAnimator(FloatingActionButton collapsedFab, FloatingActionButton expendedFab, int crossFadeAnimationDuration) {
         this.collapsedFab = collapsedFab;
         this.expendedFab = expendedFab;
+        this.crossFadeAnimationDuration = crossFadeAnimationDuration;
+    }
+
+    boolean isAnimating() {
+        return state == State.Showing || state == State.Removing;
     }
 
     void show() {
-        collapsedFab.setScaleX(SCALE);
-        collapsedFab.setScaleY(SCALE);
-        collapsedFab.setAlpha(0.0f);
-        collapsedFab.setAlpha(0.0f);
+        state = State.Showing;
+        collapsedFab.setScaleX(0);
+        collapsedFab.setScaleY(0);
         collapsedFab.animate()
                 .alpha(1)
                 .scaleX(1)
                 .scaleY(1)
-                .setInterpolator(DECELERATE_INTERPOLATOR)
-                .setDuration(SHOW_DURATION)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        state = State.Idle;
+                    }
+                })
+                .setDuration(crossFadeAnimationDuration)
                 .start();
     }
 
@@ -43,26 +50,26 @@ public class FloatingActionButtonAnimator {
     }
 
     void hideCollapsed() {
-        animateFab(collapsedFab, 0, ANGLE);
+        animateFab(collapsedFab, 0, 90);
     }
 
     void showExpended() {
         animateFab(expendedFab, 1, 0);
     }
 
-    private void showCollapsed() {
+    void showCollapsed() {
         animateFab(collapsedFab, 1, 0);
         collapsedFab.bringToFront();
     }
 
-    private void hideExpended() {
-        animateFab(expendedFab, 0, -ANGLE);
+    void hideExpended() {
+        animateFab(expendedFab, 0, -90);
     }
 
     private void animateFab(final FloatingActionButton fab, final int alpha, int rotation) {
         fab.animate()
                 .alpha(alpha)
-                .setDuration(HIDE_DURATION)
+                .setDuration(crossFadeAnimationDuration)
                 .rotation(rotation)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -84,11 +91,12 @@ public class FloatingActionButtonAnimator {
         if (fab == null) {
             return;
         }
+        state = State.Removing;
         fab.animate()
                 .alpha(0)
-                .scaleX(SCALE)
-                .scaleY(SCALE)
-                .setDuration(HIDE_DURATION)
+                .scaleX(0)
+                .scaleY(0)
+                .setDuration(crossFadeAnimationDuration)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
@@ -106,7 +114,7 @@ public class FloatingActionButtonAnimator {
                     .alpha(0)
                     .scaleX(0)
                     .scaleY(0)
-                    .setDuration(HIDE_DURATION)
+                    .setDuration(crossFadeAnimationDuration)
                     .start();
         }
     }

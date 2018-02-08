@@ -1,7 +1,5 @@
 package com.reactnativenavigation.bridge;
 
-import android.support.annotation.Nullable;
-
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -54,8 +52,8 @@ public class NavigationReactModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void startApp(final ReadableMap params, final @Nullable Promise promise) {
-        NavigationCommandsHandler.startApp(BundleConverter.toBundle(params), promise);
+    public void startApp(final ReadableMap params) {
+        NavigationCommandsHandler.startApp(BundleConverter.toBundle(params));
     }
 
     @ReactMethod
@@ -178,8 +176,8 @@ public class NavigationReactModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void push(final ReadableMap params, Promise onPushComplete) {
-        NavigationCommandsHandler.push(BundleConverter.toBundle(params), onPushComplete);
+    public void push(final ReadableMap params) {
+        NavigationCommandsHandler.push(BundleConverter.toBundle(params));
     }
 
     @ReactMethod

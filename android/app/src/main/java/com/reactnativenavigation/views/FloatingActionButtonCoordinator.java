@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 
@@ -29,6 +30,7 @@ class FloatingActionButtonCoordinator {
     private FabParams params;
     private FloatingActionButton collapsedFab;
     private FloatingActionButton expendedFab;
+    private final int crossFadeAnimationDuration;
     private final int actionSize;
     private final int margin = (int) ViewUtils.convertDpToPixel(16);
     private FloatingActionButtonAnimator fabAnimator;
@@ -37,10 +39,12 @@ class FloatingActionButtonCoordinator {
     FloatingActionButtonCoordinator(CoordinatorLayout parent) {
         this.parent = parent;
         actions = new ArrayList<>();
+        crossFadeAnimationDuration = parent.getResources().getInteger(android.R.integer.config_shortAnimTime);
         actionSize = (int) ViewUtils.convertDpToPixel(40);
     }
 
     public void add(final FabParams params) {
+        Log.i(TAG, "add() called with: params = [" + params + "]");
         if (hasFab()) {
             remove(new Runnable() {
                 @Override
@@ -58,7 +62,7 @@ class FloatingActionButtonCoordinator {
         createCollapsedFab();
         createExpendedFab();
         setStyle();
-        fabAnimator = new FloatingActionButtonAnimator(collapsedFab, expendedFab);
+        fabAnimator = new FloatingActionButtonAnimator(collapsedFab, expendedFab, crossFadeAnimationDuration);
         fabAnimator.show();
     }
 

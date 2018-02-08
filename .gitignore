@@ -215,5 +215,3 @@ android/keystores/debug.keystore
 jsconfig.json
 .vscode/launchReactNative.js
 example/yarn.lock
-example/package-lock.json
-/package-lock.json

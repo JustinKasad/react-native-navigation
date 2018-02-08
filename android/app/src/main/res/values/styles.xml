@@ -26,8 +26,4 @@
     <style name="ModalSlideHorizontal">
         <item name="android:windowExitAnimation">@anim/slide_out_right</item>
     </style>
-
-    <style name="ModalScreenAnimations">
-        <item name="android:windowExitAnimation">@anim/pop</item>
-    </style>
 </resources>

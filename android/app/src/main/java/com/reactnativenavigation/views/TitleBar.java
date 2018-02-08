@@ -9,7 +9,6 @@ import android.graphics.Typeface;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -80,12 +79,9 @@ public class TitleBar extends Toolbar {
         setTitleTextFontSize(params);
         setTitleTextFontWeight(params);
         setSubtitleTextColor(params);
-        setSubtitleFontSize(params);
-        setSubtitleFont(params);
         colorOverflowButton(params);
         setBackground(params);
         centerTitle(params);
-        setTopPadding(params);
     }
 
     public void setVisibility(boolean titleBarHidden) {
@@ -94,30 +90,7 @@ public class TitleBar extends Toolbar {
 
     public void setTitle(String title, StyleParams styleParams) {
         setTitle(title);
-        setTitleTextFont(styleParams);
         centerTitle(styleParams);
-    }
-
-    public void setSubtitle(CharSequence subtitle, StyleParams styleParams) {
-        super.setSubtitle(subtitle);
-        setSubtitleFontSize(styleParams);
-        setSubtitleFont(styleParams);
-    }
-
-    private void setSubtitleFontSize(StyleParams params) {
-        TextView subtitleView = getSubtitleView();
-        if (subtitleView != null && params.titleBarSubtitleFontSize > 0) {
-            subtitleView.setTextSize(params.titleBarSubtitleFontSize);
-        }
-    }
-
-    private void setSubtitleFont(StyleParams params) {
-        if (params.titleBarSubtitleFontFamily.hasFont()) {
-            TextView subtitleView = getSubtitleView();
-            if (subtitleView != null) {
-                subtitleView.setTypeface(params.titleBarSubtitleFontFamily.get());
-            }
-        }
     }
 
     private void centerTitle(final StyleParams params) {
@@ -133,10 +106,6 @@ public class TitleBar extends Toolbar {
                 }
             }
         });
-    }
-
-    private void setTopPadding(final StyleParams params) {
-        setPadding(0, (int) ViewUtils.convertDpToPixel(params.titleBarTopPadding), 0,0);
     }
 
     private void colorOverflowButton(StyleParams params) {
@@ -307,17 +276,6 @@ public class TitleBar extends Toolbar {
             @Override
             public boolean match(TextView child) {
                 return child.getText().equals(getTitle());
-            }
-        });
-    }
-
-    @Nullable
-    private TextView getSubtitleView() {
-        if (TextUtils.isEmpty(getSubtitle())) return null;
-        return ViewUtils.findChildByClass(this, TextView.class, new ViewUtils.Matcher<TextView>() {
-            @Override
-            public boolean match(TextView child) {
-                return child.getText().equals(getSubtitle());
             }
         });
     }

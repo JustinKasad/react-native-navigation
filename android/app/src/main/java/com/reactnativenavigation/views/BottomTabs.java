@@ -57,22 +57,10 @@ public class BottomTabs extends AHBottomNavigation {
     }
 
     public void setTabButton(ScreenParams params, Integer index) {
-        if (params.tabIcon != null || params.tabLabel != null) {
+        if (params.tabIcon != null) {
             AHBottomNavigationItem item = this.getItem(index);
-            boolean tabNeedsRefresh = false;
-
-            if (params.tabIcon != null) {
-                item.setDrawable(params.tabIcon);
-                tabNeedsRefresh = true;
-            }
-            if (params.tabLabel != null) {
-                item.setTitle(params.tabLabel);
-                tabNeedsRefresh = true;
-            }
-
-            if (tabNeedsRefresh) {
-                this.refresh();
-            }
+            item.setDrawable(params.tabIcon);
+            refresh();
         }
     }
 
@@ -88,7 +76,7 @@ public class BottomTabs extends AHBottomNavigation {
 
     private boolean hasTabsWithLabels() {
         for (int i = 0; i < getItemsCount(); i++) {
-            String title = getItem(i).getTitle(getContext());
+            String title = getItem(0).getTitle(getContext());
             if (!TextUtils.isEmpty(title)) {
                 return true;
             }
@@ -96,20 +84,12 @@ public class BottomTabs extends AHBottomNavigation {
         return false;
     }
 
-    public void setVisibilityByInitialScreen(StyleParams styleParams) {
-        setVisibility(styleParams.bottomTabsHidden, false);
-    }
-
     public void setVisibility(boolean hidden, boolean animated) {
         if (visibilityAnimator != null) {
-            visibilityAnimator.setVisible(!hidden, animated, null);
+            visibilityAnimator.setVisible(!hidden, animated);
         } else {
             setVisibility(hidden);
         }
-    }
-
-    public void setCurrentItemWithoutInvokingTabSelectedListener(Integer index) {
-        setCurrentItem(index, false);
     }
 
     private void setBackgroundColor(StyleParams.Color bottomTabsColor) {

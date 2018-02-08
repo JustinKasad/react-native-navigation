@@ -10,7 +10,6 @@ import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBar;
 import android.view.Gravity;
 import android.view.ViewGroup;
-import android.view.ViewOutlineProvider;
 import android.widget.FrameLayout;
 
 import com.facebook.react.bridge.Callback;
@@ -37,16 +36,12 @@ public class TopBar extends AppBarLayout {
     private VisibilityAnimator visibilityAnimator;
     @Nullable
     private Pair<String, ContentView> reactView;
-    private ViewOutlineProvider outlineProvider;
 
     public TopBar(Context context) {
         super(context);
         setId(ViewUtils.generateViewId());
         createTopBarVisibilityAnimator();
         createLayout();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            outlineProvider = getOutlineProvider();
-        }
     }
 
     private void createTopBarVisibilityAnimator() {
@@ -98,8 +93,8 @@ public class TopBar extends AppBarLayout {
         titleBar.setTitle(title, styleParams);
     }
 
-    public void setSubtitle(String subtitle, StyleParams styleParams) {
-        titleBar.setSubtitle(subtitle, styleParams);
+    public void setSubtitle(String subtitle) {
+        titleBar.setSubtitle(subtitle);
     }
 
     public void setReactView(@NonNull StyleParams styleParams) {
@@ -172,17 +167,19 @@ public class TopBar extends AppBarLayout {
         titleBar.setStyle(styleParams);
         setReactView(styleParams);
         setTopTabsStyle(styleParams);
-        setElevationEnabled(styleParams.topBarElevationShadowEnabled);
+        if (!styleParams.topBarElevationShadowEnabled) {
+            disableElevationShadow();
+        }
     }
 
     private void setTransparent() {
         setBackgroundColor(Color.TRANSPARENT);
-        setElevationEnabled(false);
+        disableElevationShadow();
     }
 
-    private void setElevationEnabled (boolean enabled) {
+    private void disableElevationShadow() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setOutlineProvider(enabled ? outlineProvider : null);
+            setOutlineProvider(null);
         }
     }
 
@@ -216,7 +213,6 @@ public class TopBar extends AppBarLayout {
         topTabs.setTopTabsTextColor(style);
         topTabs.setSelectedTabIndicatorStyle(style);
         topTabs.setScrollable(style);
-        topTabs.setTopTabsTextFontFamily(style);
     }
 
     public void showContextualMenu(final ContextualMenuParams params, StyleParams styleParams, Callback onButtonClicked) {
@@ -265,16 +261,7 @@ public class TopBar extends AppBarLayout {
     }
 
     public void setVisible(boolean visible, boolean animate) {
-        if (visible) {
-            titleBar.setVisibility(false);
-            visibilityAnimator.setVisible(true, animate, null);
-        } else {
-            visibilityAnimator.setVisible(false, animate, new Runnable() {
-                @Override
-                public void run() {
-                    titleBar.setVisibility(true);
-                }
-            });
-        }
+        titleBar.setVisibility(!visible);
+        visibilityAnimator.setVisible(visible, animate);
     }
 }

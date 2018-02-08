@@ -48,19 +48,12 @@ public class StyleParams {
         public int getColor(int defaultColor) {
             return hasColor() ? getColor() : defaultColor;
         }
-
-        @Override
-        public String toString() {
-            return this.getHexColor();
-        }
     }
 
     public static class Font {
         private Typeface typeface;
-        String fontFamilyName;
 
         public Font(String font) {
-            fontFamilyName = font;
             typeface = new TypefaceLoader(font).getTypeFace();
         }
 
@@ -68,7 +61,7 @@ public class StyleParams {
         }
 
         public boolean hasFont() {
-            return typeface != null && fontFamilyName != null;
+            return typeface != null;
         }
 
         public Typeface get() {
@@ -77,19 +70,12 @@ public class StyleParams {
             }
             return typeface;
         }
-
-        @Override
-        public String toString() {
-            return fontFamilyName;
-        }
     }
 
     public Orientation orientation;
-    public String screenAnimationType;
     public StatusBarTextColorScheme statusBarTextColorScheme;
     public Color statusBarColor;
     public boolean statusBarHidden;
-    public boolean drawUnderStatusBar;
     public Color contextualMenuStatusBarColor;
     public Color contextualMenuButtonsColor;
     public Color contextualMenuBackgroundColor;
@@ -112,8 +98,6 @@ public class StyleParams {
     public boolean topBarTranslucent;
     public Color titleBarTitleColor;
     public Color titleBarSubtitleColor;
-    public int titleBarSubtitleFontSize;
-    public Font titleBarSubtitleFontFamily;
     public Color titleBarButtonColor;
     public Color titleBarDisabledButtonColor;
     public Font titleBarTitleFont;
@@ -122,11 +106,8 @@ public class StyleParams {
     public boolean titleBarTitleTextCentered;
     public int titleBarHeight;
     public boolean backButtonHidden;
-    public Font titleBarButtonFontFamily;
-    public int titleBarTopPadding;
 
     public Color topTabTextColor;
-    public Font topTabTextFontFamily;
     public Color topTabIconColor;
     public Color selectedTopTabTextColor;
     public Color selectedTopTabIconColor;

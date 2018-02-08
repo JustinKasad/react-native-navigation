@@ -4,7 +4,6 @@ public enum NavigationType {
     Push,
     Pop,
     BottomTabSelected,
-    SwitchToTab,
     TopTabSelected,
     InitialScreen,
     ShowModal,

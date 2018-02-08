@@ -66,10 +66,12 @@
 
 -(UISwipeGestureRecognizerDirection)swipeDirection
 {
-    UISwipeGestureRecognizerDirection direction = [self isBottomPosition] ?  UISwipeGestureRecognizerDirectionDown : UISwipeGestureRecognizerDirectionUp;
+    UISwipeGestureRecognizerDirection direction = UISwipeGestureRecognizerDirectionUp;
     
     NSString *animationType = [self.params valueForKeyPath:@"animation.type"];
-    if ([animationType isEqualToString:@"slide-left"])
+    if ([animationType isEqualToString:@"swing"] || [animationType isEqualToString:@"slide-down"])
+        direction = UISwipeGestureRecognizerDirectionUp;
+    else if ([animationType isEqualToString:@"slide-left"])
         direction = UISwipeGestureRecognizerDirectionRight;
     else if ([animationType isEqualToString:@"slide-right"])
         direction = UISwipeGestureRecognizerDirectionLeft;
@@ -392,23 +394,31 @@ static NSMutableArray *gShownNotificationViews = nil;
 {
     if(gPendingNotifications == nil)
         gPendingNotifications = [NSMutableArray array];
-
+    
     if(gShownNotificationViews == nil)
         gShownNotificationViews = [NSMutableArray array];
-
+    
     if ([gShownNotificationViews count] > 0)
     {
-        //Queue pending notifications if more than 1 is received.
-        PendingNotification *pendingNotification = [PendingNotification new];
-        pendingNotification.params = params;
-        pendingNotification.resolve = resolve;
-        pendingNotification.reject = reject;
-        [gPendingNotifications insertObject:pendingNotification atIndex:0];
-        return;
+        for (NotificationView *notificationView in gShownNotificationViews)
+        {
+            [notificationView killAutoDismissTimer];
+        }
+        
+        //limit the amount of consecutive notifications per second. If they arrive too fast, the last one will be remembered as pending
+        if(CFAbsoluteTimeGetCurrent() - gLastShownTime < 1)
+        {
+            PendingNotification *pendingNotification = [PendingNotification new];
+            pendingNotification.params = params;
+            pendingNotification.resolve = resolve;
+            pendingNotification.reject = reject;
+            [gPendingNotifications addObject:pendingNotification];
+            return;
+        }
     }
-
+    
     gLastShownTime = CFAbsoluteTimeGetCurrent();
-
+    
     UIWindow *window = [[RCCManager sharedInstance] getAppWindow];
     NotificationView *notificationView = [[NotificationView alloc] initWithParams:params];
     [window addSubview:notificationView];
