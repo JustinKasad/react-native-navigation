@@ -33,7 +33,7 @@ public class ScreenStack {
     private final AppCompatActivity activity;
     private RelativeLayout parent;
     private LeftButtonOnClickListener leftButtonOnClickListener;
-    private Stack<Screen> stack = new Stack<>();
+    public Stack<Screen> stack = new Stack<>();
     private final KeyboardVisibilityDetector keyboardVisibilityDetector;
     private boolean isStackVisible = false;
     private final String navigatorId;

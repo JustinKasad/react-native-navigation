@@ -453,7 +453,7 @@ public class BottomTabsLayout extends BaseLayout implements AHBottomNavigation.O
 
     private void sendTabReselectedEventToJs() {
         WritableMap data = Arguments.createMap();
-        String navigatorEventId = getCurrentScreenStack().peek().getNavigatorEventId();
+        String navigatorEventId = getCurrentScreenStack().stack.get(0).getNavigatorEventId();;
         NavigationApplication.instance.getEventEmitter().sendNavigatorEvent("bottomTabReselected", navigatorEventId, data);
     }
 
