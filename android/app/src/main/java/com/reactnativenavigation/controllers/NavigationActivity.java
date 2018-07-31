@@ -172,7 +172,7 @@ public class NavigationActivity extends AppCompatActivity implements DefaultHard
 
     @Override
     public void invokeDefaultOnBackPressed() {
-        super.onBackPressed();
+        moveTaskToBack(true);
     }
 
     @Override
