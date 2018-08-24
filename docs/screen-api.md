@@ -10,6 +10,7 @@ Push a new screen into this screen's navigation stack.
 this.props.navigator.push({
   screen: 'example.ScreenThree', // unique ID registered with Navigation.registerScreen
   title: undefined, // navigation bar title of the pushed screen (optional)
+  subtitle: undefined, // navigation bar subtitle of the pushed screen (optional)
   titleImage: require('../../img/my_image.png'), // iOS only. navigation bar title image instead of the title text of the pushed screen (optional)
   passProps: {}, // Object that will be passed as props to the pushed screen (optional)
   animated: true, // does the push have transition animation or does it happen immediately (optional)
@@ -103,13 +104,14 @@ this.props.navigator.showLightBox({
  passProps: {}, // simple serializable object that will pass as props to the lightbox (optional)
  style: {
    backgroundBlur: "dark", // 'dark' / 'light' / 'xlight' / 'none' - the type of blur on the background
-   backgroundColor: "#ff000080" // tint color for the background, you can specify alpha here (optional)
+   backgroundColor: "#ff000080", // tint color for the background, you can specify alpha here (optional)
+   tapBackgroundToDismiss: true // dismisses LightBox on background taps (optional)
  },
  adjustSoftInput: "resize", // android only, adjust soft input, modes: 'nothing', 'pan', 'resize', 'unspecified' (optional, default 'unspecified')
 });
 ```
 
-## dismissLightBox(params = {})
+## dismissLightBox()
 
 Dismiss the current lightbox.
 
@@ -339,3 +341,12 @@ export default class ExampleScreen extends Component {
   }
 }
 ```
+
+# Peek and pop (3D touch)
+
+react-native-navigation supports the [Peek and pop](
+https://developer.apple.com/library/content/documentation/UserExperience/Conceptual/Adopting3DTouchOniPhone/#//apple_ref/doc/uid/TP40016543-CH1-SW3) feature by setting a react view reference as a `previewView` parameter when doing a push, more options are available in the `push` section.
+
+You can define actions and listen for interactions on the pushed screen with the `PreviewActionPress` event.
+
+Previewed screens will have the prop `isPreview` that can be used to render different things when the screen is in the "Peek" state and will then recieve a navigator event of `willCommitPreview` when in the "Pop" state.

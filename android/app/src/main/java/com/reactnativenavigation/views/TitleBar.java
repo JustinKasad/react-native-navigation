@@ -81,7 +81,8 @@ public class TitleBar extends Toolbar {
         setSubtitleTextColor(params);
         colorOverflowButton(params);
         setBackground(params);
-        centerTitle(params);
+        centerTopBarContent(params);
+        setTopPadding(params);
     }
 
     public void setVisibility(boolean titleBarHidden) {
@@ -91,6 +92,34 @@ public class TitleBar extends Toolbar {
     public void setTitle(String title, StyleParams styleParams) {
         setTitle(title);
         centerTitle(styleParams);
+    }
+
+    public void setSubtitle(CharSequence subtitle, StyleParams styleParams) {
+        super.setSubtitle(subtitle);
+        setSubtitleFontSize(styleParams);
+        setSubtitleFont(styleParams);
+        centerSubTitle(styleParams);
+    }
+
+    private void setSubtitleFontSize(StyleParams params) {
+        TextView subtitleView = getSubtitleView();
+        if (subtitleView != null && params.titleBarSubtitleFontSize > 0) {
+            subtitleView.setTextSize(params.titleBarSubtitleFontSize);
+        }
+    }
+
+    private void setSubtitleFont(StyleParams params) {
+        if (params.titleBarSubtitleFontFamily.hasFont()) {
+            TextView subtitleView = getSubtitleView();
+            if (subtitleView != null) {
+                subtitleView.setTypeface(params.titleBarSubtitleFontFamily.get());
+            }
+        }
+    }
+
+    private void centerTopBarContent(final StyleParams params) {
+        centerTitle(params);
+        centerSubTitle(params);
     }
 
     private void centerTitle(final StyleParams params) {
@@ -106,6 +135,25 @@ public class TitleBar extends Toolbar {
                 }
             }
         });
+    }
+
+    private void centerSubTitle(final StyleParams params) {
+        final TextView subTitleView = getSubtitleView();
+        if (subTitleView == null) {
+            return;
+        }
+        ViewUtils.runOnPreDraw(subTitleView, new Runnable() {
+            @Override
+            public void run() {
+                if (params.titleBarSubTitleTextCentered) {
+                    subTitleView.setX(ViewUtils.getWindowWidth((Activity) getContext()) / 2 - subTitleView.getWidth() / 2);
+                }
+            }
+        });
+    }
+
+    private void setTopPadding(final StyleParams params) {
+        setPadding(0, (int) ViewUtils.convertDpToPixel(params.titleBarTopPadding), 0,0);
     }
 
     private void colorOverflowButton(StyleParams params) {
@@ -171,7 +219,7 @@ public class TitleBar extends Toolbar {
 
     private void addButtonsToTitleBar(String navigatorEventId, Menu menu) {
         for (int i = 0; i < rightButtons.size(); i++) {
-            final TitleBarButton button = new TitleBarButton(menu, this, rightButtons.get(i), navigatorEventId);
+            final TitleBarButton button = new TitleBarButton(menu, getActionMenuView(), rightButtons.get(i), navigatorEventId);
             addButtonInReverseOrder(rightButtons, i, button);
         }
     }
@@ -305,7 +353,7 @@ public class TitleBar extends Toolbar {
     }
 
     private void setButtonTextColor() {
-        final ActionMenuView buttonsContainer = ViewUtils.findChildByClass(this, ActionMenuView.class);
+        final ActionMenuView buttonsContainer = getActionMenuView();
         if (buttonsContainer != null) {
             for (int i = 0; i < buttonsContainer.getChildCount(); i++) {
                 if (buttonsContainer.getChildAt(i) instanceof TextView) {
@@ -313,6 +361,10 @@ public class TitleBar extends Toolbar {
                 }
             }
         }
+    }
+
+    protected ActionMenuView getActionMenuView() {
+        return ViewUtils.findChildByClass(this, ActionMenuView.class);
     }
 
     private void setButtonsIconColor() {

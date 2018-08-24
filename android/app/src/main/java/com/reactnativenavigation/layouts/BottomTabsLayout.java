@@ -103,6 +103,9 @@ public class BottomTabsLayout extends BaseLayout implements AHBottomNavigation.O
         ScreenParams screenParams = params.tabParams.get(position);
         ScreenStack newStack = new ScreenStack(getActivity(), getScreenStackParent(), screenParams.getNavigatorId(), this);
         newStack.pushInitialScreen(screenParams, createScreenLayoutParams(screenParams));
+        for (ScreenParams screen : screenParams.screens) {
+            newStack.pushInitialScreen(screen, createScreenLayoutParams(screen));
+        }
         screenStacks[position] = newStack;
     }
 
@@ -301,6 +304,7 @@ public class BottomTabsLayout extends BaseLayout implements AHBottomNavigation.O
 
     @Override
     public void onModalDismissed() {
+        getCurrentScreenStack().peek().setStyle();
         getCurrentScreenStack().peek().getScreenParams().timestamp = System.currentTimeMillis();
         NavigationApplication.instance.getEventEmitter().sendWillAppearEvent(getCurrentScreenStack().peek().getScreenParams(), NavigationType.DismissModal);
         NavigationApplication.instance.getEventEmitter().sendDidAppearEvent(getCurrentScreenStack().peek().getScreenParams(), NavigationType.DismissModal);
@@ -351,14 +355,17 @@ public class BottomTabsLayout extends BaseLayout implements AHBottomNavigation.O
     }
 
     @Override
-    public void push(ScreenParams params) {
-        ScreenStack screenStack = getScreenStack(params.getNavigatorId());
-        screenStack.push(params, createScreenLayoutParams(params));
-        setStyleFromScreen(params.styleParams);
-        if (isCurrentStack(screenStack)) {
-            alignSnackbarContainerWithBottomTabs((LayoutParams) snackbarAndFabContainer.getLayoutParams(), params.styleParams);
-            EventBus.instance.post(new ScreenChangedEvent(params));
-        }
+    public void push(final ScreenParams params) {
+        performOnStack(params.getNavigatorId(), new Task<ScreenStack>() {
+            @Override
+            public void run(ScreenStack screenStack) {
+                screenStack.push(params, createScreenLayoutParams(params));
+                if (isCurrentStack(screenStack)) {
+                    setStyleFromScreen(params.styleParams);
+                    EventBus.instance.post(new ScreenChangedEvent(params));
+                }
+            }
+        }, onPushComplete);
     }
 
     @Override
@@ -404,6 +411,26 @@ public class BottomTabsLayout extends BaseLayout implements AHBottomNavigation.O
         }
     }
 
+    private void performOnStack(String navigatorId, Task<ScreenStack> task) {
+        performOnStack(navigatorId, task, null);
+    }
+
+    private void performOnStack(String navigatorId, Task<ScreenStack> task, @Nullable Promise onPushComplete) {
+        try {
+            ScreenStack screenStack = getScreenStack(navigatorId);
+            task.run(screenStack);
+        } catch (ScreenStackNotFoundException e) {
+            if (onPushComplete != null) {
+                onPushComplete.reject("Navigation", "Could not perform action on stack [" + navigatorId + "]." +
+                                                    "This should not have happened, it probably means a navigator action" +
+                                                    "was called from an unmounted tab.");
+            }
+            Log.e("Navigation", "Could not perform action on stack [" + navigatorId + "]." +
+                                "This should not have happened, it probably means a navigator action" +
+                                "was called from an unmounted tab.");
+        }
+    }
+
     @Override
     public void destroy() {
         snackbarAndFabContainer.destroy();
@@ -428,6 +455,12 @@ public class BottomTabsLayout extends BaseLayout implements AHBottomNavigation.O
         }
 
         final int unselectedTabIndex = currentStackIndex;
+        sendTabSelectedEventToJs(position, unselectedTabIndex);
+        switchTab(position, NavigationType.BottomTabSelected);
+        return true;
+    }
+
+    private void switchTab(int position, NavigationType navigationType) {
         hideCurrentStack();
         showNewStack(position, NavigationType.BottomTabSelected);
         EventBus.instance.post(new ScreenChangedEvent(getCurrentScreenStack().peek().getScreenParams()));
@@ -436,7 +469,7 @@ public class BottomTabsLayout extends BaseLayout implements AHBottomNavigation.O
     }
 
     private void sendTabSelectedEventToJs(int selectedTabIndex, int unselectedTabIndex) {
-        String navigatorEventId = getCurrentScreenStack().peek().getNavigatorEventId();
+        String navigatorEventId = screenStacks[selectedTabIndex].peek().getNavigatorEventId();
         WritableMap data = createTabSelectedEventData(selectedTabIndex, unselectedTabIndex);
         NavigationApplication.instance.getEventEmitter().sendNavigatorEvent("bottomTabSelected", navigatorEventId, data);
 
