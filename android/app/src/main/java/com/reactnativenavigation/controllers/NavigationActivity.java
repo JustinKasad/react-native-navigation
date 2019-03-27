@@ -181,7 +181,9 @@ public class NavigationActivity extends AppCompatActivity implements DefaultHard
 
     @Override
     public void invokeDefaultOnBackPressed() {
-        moveTaskToBack(true);
+        if (layout != null && !layout.onBackPressed()) {
+            moveTaskToBack(true);
+        }
     }
 
     @Override
@@ -460,5 +462,17 @@ public class NavigationActivity extends AppCompatActivity implements DefaultHard
 
     public String getCurrentlyVisibleScreenId() {
         return modalController.isShowing() ? modalController.getCurrentlyVisibleScreenId() : layout.getCurrentlyVisibleScreenId();
+    }
+
+    public String getCurrentlyVisibleEventId() {
+        return modalController.isShowing() ? modalController.getCurrentlyVisibleEventId() : layout.getCurrentScreen().getNavigatorEventId();
+    }
+
+    public static void setStartAppPromise(Promise promise) {
+        NavigationActivity.startAppPromise = promise;
+    }
+
+    public Layout getLayout() {
+        return layout;
     }
 }
